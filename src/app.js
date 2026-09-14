@@ -76,17 +76,18 @@
   const otherTag = (it) => state.declined.has(it.id) ? `<span class="tag">Declined</span>` : state.accepted.has(it.id) ? `<span class="tag">Accepted</span>` : "—";
   function renderList(params) {
     crumb.innerHTML = `<span class="faint">Optimize</span><span class="faint">›</span><span>Actions</span>`;
-    const f = { status: params.status || (params.status === "" ? "All" : "All"), type: params.type || "All", target: params.target || "All", impact: params.impact || "All", sort: params.sort || "impact", q: params.q || "" };
+    const f = { status: params.status || (params.status === "" ? "All" : "All"), type: params.type || "All", target: params.target || "All", impact: params.impact || "All", sort: params.sort || "impact", q: params.q || "", group: params.group || "What to do" };
     const types = ["All", ...D.action_groups.map(g => g.title)];
     let items = allItems.filter(it => (f.status === "All" ? itemStatus(it) !== "Declined" : true) && (f.status === "All" || itemStatus(it) === f.status || (f.status === "Watching" && itemStatus(it).startsWith("Watching")) || (f.status === "Running" && itemStatus(it).startsWith("Revising"))) && (f.type === "All" || it.group === f.type) && (f.target === "All" || (f.target === "Owned" ? ["brief", "opt", "seo"].includes(it.type) : it.type === "earned")) && (f.impact === "All" || impLabel(it.impact) === f.impact) && (!f.q || it.title.toLowerCase().includes(f.q.toLowerCase())));
     if (f.sort === "impact") items.sort((a, b) => impRank(b.impact) - impRank(a.impact)); else if (f.sort === "title") items.sort((a, b) => a.title.localeCompare(b.title));
-    const groups = D.action_groups.map(g => ({ title: g.title, items: items.filter(i => i.group === g.title) })).filter(g => g.items.length);
+    const groups = (f.group === "Owned vs earned" ? [{ title: "Owned", items: items.filter(i => i.type !== "earned") }, { title: "Earned", items: items.filter(i => i.type === "earned") }] : D.action_groups.map(g => ({ title: g.title, items: items.filter(i => i.group === g.title) }))).filter(g => g.items.length);
     const c = D.counts;
     const sel = (key, name, opts, cur) => `<label class="chip" style="gap:4px"><span class="faint small">${name}</span><select data-f="${key}" style="border:0;background:transparent;font:inherit;color:inherit">${opts.map(o => `<option ${o === cur ? "selected" : ""}>${o}</option>`).join("")}</select></label>`;
     main.innerHTML = `
       <div class="toolbar">
         ${sel("status", "Status", STATUS_OPTS, f.status)} ${sel("type", "Type", types, f.type)} ${sel("target", "Target", ["All", "Owned", "Earned"], f.target)} ${sel("impact", "Impact", ["All", "Very high", "High", "Medium", "Low", "Very low"], f.impact)}
         <label class="chip" style="gap:4px"><span class="faint small">Sort</span><select data-f="sort" style="border:0;background:transparent;font:inherit;color:inherit"><option value="impact" ${f.sort === "impact" ? "selected" : ""}>Impact</option><option value="title" ${f.sort === "title" ? "selected" : ""}>Title</option></select></label>
+        ${sel("group", "Group by", ["What to do", "Owned vs earned"], f.group)}
         <input id="q" type="search" placeholder="Search actions" value="${esc(f.q)}" style="font:inherit;padding:6px 10px;border:1px solid var(--line);border-radius:8px;min-width:160px" aria-label="Search actions">
         <span class="sp"></span><span class="chip">+ Add content</span><button class="pill-btn" id="acceptall">✓ Accept all</button>
       </div>
@@ -417,7 +418,7 @@
         <div><b>Not in this prototype:</b> real permissions, cost accounting beyond the budget line, content-optimisation and technical runs (second release), earned placements (out of scope).</div>
         <div><b>How production differs:</b> the run is a scheduled multi-step agent on Peec's existing harness using existing skills as steps; every read is an existing MCP tool (named in the run log); the one write inside Peec is <span class="mono">update_action_steps</span>; hand-off and live-detection are integrations; verification joins Crawl Insights, Sources, the brand report and AI Referrals to the action.</div>
       </div></div>
-      <p class="muted small">Keys: 1–6 jump between screens · R resets · P hides the presenter bar. Filters on the Actions page live in the URL.</p>
+      <p class="muted small">Keys: 1–6 jump between screens · R resets · P hides the presenter bar · <b>C shows “Changes”</b> — numbered callouts on every element that differs from Peec today, with Today / Proposed / Why in a side panel (same numbers as 04-feature-spec.md). Filters on the Actions page live in the URL.</p>
       <div class="card"><div class="hd"><b>Beyond the happy path</b></div><div class="bd small"><b>On the pages:</b> Decline / Undo, Accept (scheduled tonight) vs Accept &amp; run now, Accept all / Decline all, Cancel a run, answer the required input, Edit &amp; approve, Send back, Decline at review, Close run, <a href="#/settings">AI settings</a> (auto-approve by impact band, pause all runs, destination). <b>In the Scenarios menu on the presenter bar:</b> budget exhausted, unreadable source, tool error (resumable), stale review, destination not configured, URL found automatically, nothing published after 7 days, published URL 404, day 30 nothing moved, logs / GA4 not connected. Full list with expected behaviour in <span class="mono">05-use-cases.md</span>.</div></div>
       <a href="#/actions">← Back to Actions</a></div>`;
   }
@@ -436,14 +437,62 @@
   }
   function updatePres() { const { seg, params } = parseHash(); document.querySelectorAll(".pres button[data-s]").forEach(b => { const k = b.dataset.s.split("?")[0].split("/")[0]; b.classList.toggle("on", k === seg && (seg !== "report" || (params.day || "30") === "30")); }); }
   function buildPres() {
-    const bar = h(`<div class="pres" role="navigation" aria-label="presenter"><span class="lab">Demo</span>${ORDER.map(([s, l]) => `<button data-s="${s}">${l}</button>`).join("")}<select id="scn" title="Scenarios" style="font:inherit;font-size:12px;background:transparent;color:#ddd;border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:4px 8px;max-width:210px">${SCENARIOS.map(([k, l]) => `<option value="${k}">${l}</option>`).join("")}</select><button data-a="about" title="What is real and what is simulated">ⓘ</button><span class="lab">1–6 · R reset · P hide</span></div>`);
+    const bar = h(`<div class="pres" role="navigation" aria-label="presenter"><span class="lab">Demo</span>${ORDER.map(([s, l]) => `<button data-s="${s}">${l}</button>`).join("")}<select id="scn" title="Scenarios" style="font:inherit;font-size:12px;background:transparent;color:#ddd;border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:4px 8px;max-width:210px">${SCENARIOS.map(([k, l]) => `<option value="${k}">${l}</option>`).join("")}</select><button data-a="spec" title="Show what changed vs Peec today (key C)">Changes</button><button data-a="about" title="What is real and what is simulated">ⓘ</button><span class="lab">1–6 · R reset · P hide</span></div>`);
     bar.querySelector("#scn").onchange = (e) => { state.scn = {}; if (e.target.value) state.scn[e.target.value] = true; const target = { budget: "run", source: "run", toolerr: "run", stale: "review", nodest: "handoff", autofound: "handoff", nudged: "handoff", broken: "report?day=30", nomove: "report?day=30", noconn: "report?day=30" }[e.target.value]; if (e.target.value) { state.run.resumed = false; if (["budget", "source", "toolerr"].includes(e.target.value)) { state.run = { ...freshRun(), status: "running", decisions: state.run.decisions }; } jumpTo(target); } else render(); };
     document.body.appendChild(bar);
     bar.querySelectorAll("button[data-s]").forEach(b => b.onclick = () => jumpTo(b.dataset.s));
     bar.querySelector("[data-a=about]").onclick = () => nav("about");
-    document.addEventListener("keydown", (e) => { if (["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName)) return; const i = parseInt(e.key, 10); if (i >= 1 && i <= 6) jumpTo(ORDER[i - 1][0]); if (e.key === "r" || e.key === "R") resetAll(); if (e.key === "p" || e.key === "P") { state.presHidden = !state.presHidden; bar.classList.toggle("hidden", state.presHidden); } });
+    bar.querySelector("[data-a=spec]").onclick = toggleSpec;
+    document.addEventListener("keydown", (e) => { if (["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName)) return; const i = parseInt(e.key, 10); if (i >= 1 && i <= 6) jumpTo(ORDER[i - 1][0]); if (e.key === "r" || e.key === "R") resetAll(); if (e.key === "p" || e.key === "P") { state.presHidden = !state.presHidden; bar.classList.toggle("hidden", state.presHidden); } if (e.key === "c" || e.key === "C") toggleSpec(); });
   }
   function jumpTo(s) { const [path, q] = s.split("?"); const params = Object.fromEntries(new URLSearchParams(q || "")); if (path === "run") state._fast = true; nav(path, q ? params : undefined); }
+
+
+  /* ---------- "Changes" mode: numbered callouts from 04-feature-spec.md §6.2 ---------- */
+  let specObs = null, specTimer = null;
+  try { state.spec = localStorage.getItem("ar.spec") === "1"; } catch (e) { state.spec = false; }
+  function toggleSpec() { state.spec = !state.spec; try { localStorage.setItem("ar.spec", state.spec ? "1" : "0"); } catch (e) {} applySpec(); }
+  function specKey() { const { seg, id } = parseHash(); if (seg === "action") return id === anchor.id ? "action" : null; return window.SPEC && window.SPEC[seg] ? seg : null; }
+  function findEl(sel) {
+    if (sel.css) { try { return main.querySelector(sel.css); } catch (e) { return null; } }
+    if (sel.text) { const [tag, txt] = sel.text; const els = [...main.querySelectorAll(tag)].filter(e => (e.textContent || "").replace(/\s+/g, " ").includes(txt)); return els.length ? els[els.length - 1] : null; }
+    return null;
+  }
+  function clearSpec() { document.querySelectorAll(".spec-badge,.spec-ring").forEach(e => e.remove()); document.querySelectorAll(".spec-hl").forEach(e => e.classList.remove("spec-hl", "spec-hot")); const d = $("#specdrawer"); if (d) d.remove(); document.body.classList.remove("spec"); if (specObs) { specObs.disconnect(); specObs = null; } const pb = document.querySelector('.pres [data-a=spec]'); if (pb) pb.classList.toggle("act", !!state.spec); }
+  function placeSpec() {
+    document.querySelectorAll(".spec-badge,.spec-ring").forEach(e => e.remove());
+    const key = specKey(); if (!key) return;
+    const mr = main.getBoundingClientRect();
+    window.SPEC[key].items.forEach(it => {
+      const el = findEl(it.sel); if (!el) return;
+      const r = el.getBoundingClientRect(); if (!r.width && !r.height) return;
+      el.classList.add("spec-hl");
+      const ring = h(`<div class="spec-ring" data-n="${it.n}"></div>`); ring.style.cssText = `left:${r.left - mr.left - 4}px;top:${r.top - mr.top - 4}px;width:${r.width + 8}px;height:${r.height + 8}px`;
+      const b = h(`<div class="spec-badge" data-n="${it.n}" title="${esc(it.label)}">${it.n}</div>`); b.style.cssText = `left:${r.left - mr.left - 14}px;top:${r.top - mr.top - 14}px`;
+      main.appendChild(ring); main.appendChild(b);
+      const hot = (on) => { document.querySelectorAll(`#specdrawer .e[data-n="${it.n}"]`).forEach(x => { x.classList.toggle("hot", on); if (on) x.scrollIntoView({ block: "nearest" }); }); el.classList.toggle("spec-hot", on); ring.classList.toggle("hot", on); };
+      [b, el].forEach(x => { x.addEventListener("mouseenter", () => hot(true)); x.addEventListener("mouseleave", () => hot(false)); });
+      b.onclick = (e) => { e.stopPropagation(); hot(true); };
+    });
+  }
+  function applySpec() {
+    clearSpec();
+    if (!state.spec) return;
+    document.body.classList.add("spec");
+    const key = specKey();
+    const sp = key ? window.SPEC[key] : null;
+    const d = h(`<aside id="specdrawer" aria-label="What changed"><div class="dh"><b>What changed vs Peec today</b><span class="sp" style="flex:1"></span><button class="x" id="specclose" title="Hide (C)">✕</button></div>
+      ${sp ? `<div class="dt">${esc(sp.title)}</div><div class="ds">Hover a number on the screen, or an entry here. Same numbers as 04-feature-spec.md §6.2.</div>
+      ${sp.items.map(it => `<div class="e" data-n="${it.n}"><span class="n">${it.n}</span><div class="t"><b>${esc(it.label)}</b><span><span class="k">Today</span><span class="today">${esc(it.today)}</span></span><span><span class="k">Proposed</span>${esc(it.proposed)}</span><span><span class="k">Why</span><span class="why">${esc(it.why)}</span></span></div></div>`).join("")}
+      ${sp.notes.map(n => `<div class="note">${esc(n)}</div>`).join("")}` : `<div class="ds">No callouts on this page. The changes are on: Overview, Actions, the content-brief action, Run, Review, Hand-off, Report, AI settings.</div>`}</aside>`);
+    document.body.appendChild(d);
+    $("#specclose").onclick = toggleSpec;
+    d.querySelectorAll(".e").forEach(e => { const n = e.dataset.n; e.addEventListener("mouseenter", () => { document.querySelectorAll(`.spec-ring[data-n="${n}"]`).forEach(r => r.classList.add("hot")); e.classList.add("hot"); }); e.addEventListener("mouseleave", () => { document.querySelectorAll(`.spec-ring[data-n="${n}"]`).forEach(r => r.classList.remove("hot")); e.classList.remove("hot"); }); e.onclick = () => { const r = document.querySelector(`.spec-badge[data-n="${n}"]`); if (r) r.scrollIntoView({ block: "center", behavior: "smooth" }); }; });
+    placeSpec();
+    specObs = new MutationObserver(() => { clearTimeout(specTimer); specTimer = setTimeout(placeSpec, 120); });
+    specObs.observe(main, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "style"] });
+  }
+  window.addEventListener("resize", () => { if (state.spec) placeSpec(); });
 
   /* ---------- router ---------- */
   function render() {
@@ -463,7 +512,7 @@
       case "settings": renderSettings(); break;
       default: errorScreen("Page not found", `There is no page at “#/${seg}”.`);
     }
-    window.scrollTo({ top: 0 }); updatePres();
+    window.scrollTo({ top: 0 }); updatePres(); applySpec();
     document.querySelectorAll(".nav a[data-r]").forEach(a => a.classList.toggle("on", a.dataset.r === seg || (a.dataset.r === "actions" && ["action", "run", "review", "handoff", "report"].includes(seg))));
   }
   /* self-test hook for automated checks (SMA-11) */

@@ -217,6 +217,27 @@ table.gp td.n{font-family:var(--mono);text-align:right}
 @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media (max-width:980px){.app{grid-template-columns:1fr}.side{display:none}.runwrap,.review,.pair{grid-template-columns:1fr}.chain{grid-template-columns:repeat(3,1fr)}.row{grid-template-columns:24px 1fr 90px}.row .sub,.row .runs{display:none}.tiles{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){.step,.plan .pi,.progress i{transition:none}.fade{animation:none}}
+
+/* Changes mode (spec callouts) */
+#main{position:relative}
+body.spec .main{padding-right:380px}
+.spec-badge{position:absolute;width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;font:600 12.5px/26px var(--mono);text-align:center;box-shadow:0 0 0 3px #fff,0 4px 12px rgba(0,0,0,.25);z-index:26;cursor:default}
+.spec-ring{position:absolute;border:1.5px dashed var(--blue);border-radius:8px;pointer-events:none;z-index:25;transition:box-shadow .15s,background .15s}
+.spec-ring.hot{background:rgba(46,107,214,.08);box-shadow:0 0 0 3px rgba(46,107,214,.25)}
+#specdrawer{position:fixed;top:0;right:0;bottom:0;width:380px;background:var(--panel);border-left:1px solid var(--line);z-index:24;display:flex;flex-direction:column;overflow:auto;padding:0 0 90px;box-shadow:-8px 0 24px rgba(0,0,0,.06)}
+#specdrawer .dh{display:flex;align-items:center;gap:8px;padding:14px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel);font-size:14px}
+#specdrawer .dh .x{background:none;border:0;color:var(--ink3);font-size:14px}
+#specdrawer .dt{padding:14px 18px 2px;font-weight:600;font-size:15px}
+#specdrawer .ds{padding:0 18px 12px;font-size:12.5px;color:var(--ink3)}
+#specdrawer .e{display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start;padding:12px 18px;border-top:1px solid var(--line);cursor:pointer;transition:background .15s}
+#specdrawer .e.hot{background:var(--blue2)}
+#specdrawer .e .n{width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;font:600 12px/24px var(--mono);text-align:center}
+#specdrawer .e .t{font-size:13px;line-height:1.45;display:flex;flex-direction:column;gap:3px}
+#specdrawer .e .t b{font-weight:600}
+#specdrawer .k{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);font-family:var(--mono);margin-right:6px}
+#specdrawer .today{color:var(--ink2)}
+#specdrawer .why{color:var(--ink2);font-style:italic}
+#specdrawer .note{font-size:12.5px;color:var(--ink2);border-top:1px solid var(--line);padding:12px 18px;line-height:1.45}
 </style>
 <div class="app">
   <aside class="side">
@@ -294,6 +315,534 @@ window.DRAFT = {
   ],
   jsonld: '{"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"Nike Running Shoe Technology: Pegasus vs. Vomero","author":{"@type":"Organization","name":"Nike"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Which is softer, the Pegasus or the Vomero?","acceptedAnswer":{"@type":"Answer","text":"The Vomero…"}}]}]}',
   never_write_hits: [{ term: "best", where: "H2 draft 3, bullet 1", fixed: "prioritise" }]
+};
+</script>
+<script>// Spec callouts (04-feature-spec.md §6.2) — shown by the presenter bar's “Changes” toggle
+window.SPEC = {
+ "overview": {
+  "title": "S0 · Overview",
+  "items": [
+   {
+    "n": 1,
+    "sel": {
+     "text": [
+      "b",
+      "Runs"
+     ]
+    },
+    "label": "Runs card",
+    "today": "—",
+    "proposed": "Run status tag + one line (“No runs yet. Accepting an action starts one tonight.” / “1 run in progress on ‹action›”) + Go to Actions →.",
+    "why": "The account owner lands here; one line says whether anything is being done. Nothing else on the page changes."
+   }
+  ],
+  "notes": [
+   "Optional in the demo — this is the “before” picture the panel already knows."
+  ]
+ },
+ "actions": {
+  "title": "S1 · Actions list",
+  "items": [
+   {
+    "n": 1,
+    "sel": {
+     "css": "label.chip:has(select[data-f=status])"
+    },
+    "label": "Status filter",
+    "today": "New · In progress · Done · Declined",
+    "proposed": "New · Accepted · Scheduled · Running · Waiting for review · Waiting to publish · Watching · Done · Declined. Default hides Declined.",
+    "why": "“Where is it stuck?” — In progress cannot answer it."
+   },
+   {
+    "n": 2,
+    "sel": {
+     "css": "label.chip:has(select[data-f=type])"
+    },
+    "label": "Filters",
+    "today": "One “All filters” menu",
+    "proposed": "Visible dropdowns: Type (what-to-do group) · Target (Owned / Earned) · Impact · Sort, plus search. All persist in the URL.",
+    "why": "Daily working tool once actions move; a URL view can be shared. UX opinion, reversible."
+   },
+   {
+    "n": 4,
+    "sel": {
+     "css": ".card .hd .tag.blue"
+    },
+    "label": "Runs column",
+    "today": "—",
+    "proposed": "Per row: run status tag, or “No run yet · N days old” for accepted-and-idle actions; “—” for types that cannot run.",
+    "why": "Makes the doing visible in the queue; “4 days old” is the nudge."
+   },
+   {
+    "n": 6,
+    "sel": {
+     "css": "#acceptall"
+    },
+    "label": "Accept all",
+    "today": "Accepts everything silently",
+    "proposed": "Confirm box: “Runs start tonight for 1 (the content brief); 7 optimisation + 13 technical accepted but wait for the next release; 17 earned never run.”",
+    "why": "Bulk accept now has consequences (runs, budget); the box states them."
+   },
+   {
+    "n": 7,
+    "sel": {
+     "css": "#declineall"
+    },
+    "label": "Decline all",
+    "today": "Declines everything",
+    "proposed": "Same confirm pattern; declined actions move to the Declined filter with Undo.",
+    "why": "Reversibility."
+   },
+   {
+    "n": 8,
+    "sel": {
+     "css": "#tip1"
+    },
+    "label": "First-run tooltip",
+    "today": "“Open an action…” tour",
+    "proposed": "“Accepting an action starts a run tonight. Or start one now from the action.”",
+    "why": "Peec already introduces behaviour with tour tooltips — reuse the pattern."
+   },
+   {
+    "n": 9,
+    "sel": {
+     "css": ".row.hl"
+    },
+    "label": "Content brief row",
+    "today": "As others",
+    "proposed": "Highlighted as the demo anchor (prototype only).",
+    "why": "Demo device, not product."
+   }
+  ],
+  "notes": [
+   "Unchanged: Group by (What to do / Owned–Earned / Topic), the three stat cards, + Add content.",
+   "Open: keep “In progress” as an umbrella in the filter, or replace it with the run states (prototype replaces it)."
+  ]
+ },
+ "action": {
+  "title": "S2 · Action detail — the content brief",
+  "items": [
+   {
+    "n": 1,
+    "sel": {
+     "css": "#acceptrun"
+    },
+    "label": "Header buttons",
+    "today": "Decline · Accept",
+    "proposed": "Decline · Accept · Accept & run now. After Accept: tag “Scheduled · tonight 02:00” + Run now. After Decline: “Declined” + Undo. During a run: Open the run →.",
+    "why": "Three intents: no; yes, tonight; yes, now. Tonight is default — the baseline is freshest after the daily prompt run."
+   },
+   {
+    "n": 2,
+    "sel": {
+     "css": ".content > div:first-child"
+    },
+    "label": "Status banner (after a decision)",
+    "today": "—",
+    "proposed": "One-line card per state: Scheduled · Scheduled by policy · Declined · Runs paused (link to settings).",
+    "why": "The action page is where a person checks “what will happen now?”."
+   },
+   {
+    "n": 3,
+    "sel": {
+     "css": ".kv > div:nth-child(4)"
+    },
+    "label": "Run field",
+    "today": "—",
+    "proposed": "“Run” added to the meta row (Topic · Models · Relative impact · Run) with the run tag.",
+    "why": "Same information as the list column, in place."
+   },
+   {
+    "n": 4,
+    "sel": {
+     "css": ".card:has(.prompt)"
+    },
+    "label": "Prompts to answer",
+    "today": "Count + link (“Prompts to answer 20 ›”)",
+    "proposed": "Inline table of the 20 prompts with today’s visibility and position per prompt (real, via get_brand_report); red under 35%, dark red at 0%. First-run tooltip on the six red prompts.",
+    "why": "The evidence that makes Accept urgent, and the baseline the run is measured against."
+   },
+   {
+    "n": 5,
+    "sel": {
+     "css": ".brief .bh .pill-btn"
+    },
+    "label": "The brief card",
+    "today": "“Work with Agent” split button",
+    "proposed": "Unchanged — Work with Agent stays for people who want to stay in chat (on-demand trigger).",
+    "why": "Don’t remove a working path."
+   },
+   {
+    "n": 6,
+    "sel": {
+     "text": [
+      "div",
+      "Required input"
+     ]
+    },
+    "label": "Required input",
+    "today": "Listed inside the brief text",
+    "proposed": "Its own labelled block (“Required input — confirm with product team”) because the run will ask for it.",
+    "why": "The one thing only a human can supply must be visible before Accept, not discovered mid-run."
+   }
+  ],
+  "notes": [
+   "7 · Non-brief actions (technical, optimisation, earned): same panel, Decline/Accept only, plus one line on what a run would and would not do for that type."
+  ]
+ },
+ "run": {
+  "title": "S3 · The run",
+  "items": [
+   {
+    "n": 1,
+    "sel": {
+     "css": "#cancel"
+    },
+    "label": "Header",
+    "today": "— (no page today)",
+    "proposed": "‹ Action · run status tag · ↻ Resume (when paused/failed) · ✕ Cancel run. Meta: “Run started · N steps · Auto-approve: off · budget: 12% of month”.",
+    "why": "Same vocabulary as Agent chat; the person can always stop it."
+   },
+   {
+    "n": 2,
+    "sel": {
+     "css": ".runlog .hdr"
+    },
+    "label": "Run log",
+    "today": "Agent chat’s “10 steps ⌄” collapsible",
+    "proposed": "Steps tick in on a timer, each naming the tool or skill it used (get_action, get_brand_report, list_chats · get_chat, list_search_queries, get_url_content × 5, get_project_profile · list_facts, /draft-the-content, /optimize-your-content) and one line of result; grey narration between phases; ends at “Checkpoint: waiting for review”.",
+    "why": "The panel must recognise every tool as their own: proof that the runner is their harness scheduled, not a new AI. Also the audit trail."
+   },
+   {
+    "n": 3,
+    "sel": {
+     "css": ".plan .hd"
+    },
+    "label": "Plan card",
+    "today": "—",
+    "proposed": "Fills as steps complete: Brief · Baseline · Today’s answer · Engine is searching for · Studied · Voice · Structure · Needs a human · Draft · Citation-readiness · Claims · → review.",
+    "why": "The reasoning at a glance without reading the log."
+   },
+   {
+    "n": 4,
+    "sel": {
+     "css": "#inputcard"
+    },
+    "label": "Required-input card",
+    "today": "—",
+    "proposed": "Text field + “Use this answer”. Answer now, at review, or never — the run doesn’t block. Answering replaces the placeholder and moves one claim from confirm to sourced.",
+    "why": "Never invent expert facts; never block on a human who is away."
+   },
+   {
+    "n": 5,
+    "sel": {
+     "css": "#runtag"
+    },
+    "label": "Run states",
+    "today": "—",
+    "proposed": "Running · Paused (budget / kill switch; resumes from the same step) · Failed (tool error; Resume retries) · Cancelled (reason; action returns to Accepted). Revision runs: 3 steps to a v2.",
+    "why": "Every failure mode has a visible state and a way back; nothing is written outside Peec before review."
+   },
+   {
+    "n": 6,
+    "sel": {
+     "text": [
+      "b",
+      "Decisions"
+     ]
+    },
+    "label": "Decisions card",
+    "today": "—",
+    "proposed": "Every human/system decision with actor and time, on every screen of the run.",
+    "why": "Traceability."
+   }
+  ],
+  "notes": []
+ },
+ "review": {
+  "title": "S4 · Review request",
+  "items": [
+   {
+    "n": 1,
+    "sel": {
+     "css": ".mail .mh"
+    },
+    "label": "Message header",
+    "today": "— (a brief link, maybe)",
+    "proposed": "To / From / subject “Review a draft: ‹H1›”, a two-line summary, and five numbers: 3 sections · 14 questions in prose, 4 in FAQ · 24/27 claims sourced · 1 to confirm · citation-readiness 82/100.",
+    "why": "The reviewer’s first question is “why me, and how much work?” — answered in five numbers."
+   },
+   {
+    "n": 2,
+    "sel": {
+     "css": "#approve"
+    },
+    "label": "Buttons",
+    "today": "—",
+    "proposed": "✓ Approve · ✎ Edit & approve · ↩ Send back (note → run revises → v2 with change summary) · ✕ Decline (reason → run cancelled, action back to Accepted).",
+    "why": "Four outcomes cover every reviewer intent; Send back is unbounded."
+   },
+   {
+    "n": 3,
+    "sel": {
+     "css": ".review .doc"
+    },
+    "label": "The draft",
+    "today": "—",
+    "proposed": "Brief left, draft right: H1, meta, three H2s each opening with a citation-ready chunk, FAQ, JSON-LD. Every factual sentence marked green = sourced (hover shows source) or amber = confirm; never-write terms enforced.",
+    "why": "Reviewers check claims, not prose; colour makes the three unconfirmed sentences findable in seconds."
+   },
+   {
+    "n": 4,
+    "sel": {
+     "css": "#edit"
+    },
+    "label": "Edit & approve",
+    "today": "—",
+    "proposed": "Draft becomes editable in place; approving records “edited by …” and lands the edited text.",
+    "why": "Small fixes must not cost a round-trip through the runner."
+   },
+   {
+    "n": 6,
+    "sel": {
+     "css": ".mail .mh .tag"
+    },
+    "label": "Where it lives",
+    "today": "Reviewer would need a Peec seat",
+    "proposed": "Email/Slack card links here; the page works without a seat (signed link, run-scoped).",
+    "why": "The TAM screen: the person doing the work never becomes a Peec user, and doesn’t need to."
+   }
+  ],
+  "notes": [
+   "5 · Stale: reminder after 3 days; after 14 days the run parks as Stale (red), the accepter can approve, reassign to me, or cancel.",
+   "Out of release 1: auto-approving drafts (needs the eval in 06)."
+  ]
+ },
+ "handoff": {
+  "title": "S5 · Hand-off and the wait",
+  "items": [
+   {
+    "n": 1,
+    "sel": {
+     "css": "#steps2"
+    },
+    "label": "Run log continues",
+    "today": "A person publishes somewhere and later clicks Done",
+    "proposed": "Landed the approved draft (Google Docs, link on the action) · Marked the action’s steps as covered (update_action_steps — the only write inside Peec) · Baseline frozen (get_brand_report, 20 prompts × 3 engines) · Waiting to publish (checking daily; nudge after 7 days).",
+    "why": "Each line is a promise about what the runner does and does not touch; freezing the baseline is what makes day 30 honest."
+   },
+   {
+    "n": 2,
+    "sel": {
+     "css": "#marklive"
+    },
+    "label": "“Tell the run the page is live”",
+    "today": "Nothing links the action to a URL",
+    "proposed": "URL field + Mark as live. Also automatic: the URL appears in Crawl Insights / Sources (“found by Peec”), or a CMS webhook later.",
+    "why": "The Live checkpoint is a system fact, never a Done click. Publishing stays the customer’s act in release 1."
+   },
+   {
+    "n": 4,
+    "sel": {
+     "text": [
+      "div",
+      "nudges the owner once"
+     ]
+    },
+    "label": "Nudge rule",
+    "today": "—",
+    "proposed": "Day 7 without a URL: one nudge, status “Waiting to publish · nudged”, no further nudges; the run keeps checking daily.",
+    "why": "Persistent without nagging."
+   },
+   {
+    "n": 5,
+    "sel": {
+     "css": "#jump"
+    },
+    "label": "Demo control",
+    "today": "—",
+    "proposed": "“Jump to day 30” styled as a demo control, not product.",
+    "why": "Presenter shortcut."
+   }
+  ],
+  "notes": [
+   "3 · Destination not configured: one-time setup card (Google Docs · WordPress · Webflow · GitHub PR · Linear ticket · download .docx meanwhile); set per project in AI settings."
+  ]
+ },
+ "report": {
+  "title": "S6 · The report — day 30",
+  "items": [
+   {
+    "n": 1,
+    "sel": {
+     "css": ".detail-hd .tag.ill"
+    },
+    "label": "Header",
+    "today": "Impact tab: markers on a chart; Action tracker empty",
+    "proposed": "‹ Action · run tag (Watching · day 30) · Illustrative tag · Day 7 / Day 30 toggle · Start over (demo control).",
+    "why": "Every post-publish number in the prototype is invented — labelled, always."
+   },
+   {
+    "n": 2,
+    "sel": {
+     "css": ".mail .mb"
+    },
+    "label": "Summary sentence",
+    "today": "—",
+    "proposed": "Plain prose: published when, fetched by whom (and not), retrieved n/20, cited n, target prompts 66% → 74% per engine, sessions arrived.",
+    "why": "The sentence customer #10 asked for; it names the cause of what didn’t move."
+   },
+   {
+    "n": 3,
+    "sel": {
+     "css": ".chain"
+    },
+    "label": "Verify chain",
+    "today": "Evidence split across Crawl Insights, Sources, AI Referrals",
+    "proposed": "Six tiles left to right: Published → Fetched by → Retrieved → Cited → Target prompts → AI referrals. Border green = happened, amber = attention, plain = neutral.",
+    "why": "The causal argument in order: a page can only move prompts if fetched, only be cited if retrieved. Where the chain breaks tells you what to fix."
+   },
+   {
+    "n": 4,
+    "sel": {
+     "css": ".bars"
+    },
+    "label": "By engine",
+    "today": "—",
+    "proposed": "Before → day-30 bar per engine with a marker at the baseline; delta green (up) or grey (±0).",
+    "why": "Engines move independently; AI Overview ±0 with Google-Extended not fetching is the diagnosis."
+   },
+   {
+    "n": 5,
+    "sel": {
+     "css": "table.gp"
+    },
+    "label": "The six red prompts",
+    "today": "—",
+    "proposed": "Same six prompts as S2: before · day 30, green when up.",
+    "why": "Closes the loop with the evidence that started it."
+   },
+   {
+    "n": 6,
+    "sel": {
+     "css": ".detail-hd .seg"
+    },
+    "label": "Day 7 vs day 30",
+    "today": "—",
+    "proposed": "Day 7 says it is too early (fetches, first retrieval, no verdict). Day 30 carries the verdict: verified / not verified with the likely reason and a next action chosen accordingly.",
+    "why": "Honesty about crawl-to-citation latency prevents a false “it didn’t work” at day 7."
+   },
+   {
+    "n": 7,
+    "sel": {
+     "text": [
+      "b",
+      "Blocker"
+     ]
+    },
+    "label": "Blockers",
+    "today": "—",
+    "proposed": "Card linking to the existing action when a bot is blocked or the URL 404s; “connect server logs / GA4 to see this” when integrations are missing.",
+    "why": "Turns verification gaps into the reason to connect Crawl Insights and AI Referrals."
+   },
+   {
+    "n": 8,
+    "sel": {
+     "text": [
+      "b",
+      "Still unanswered"
+     ]
+    },
+    "label": "Unanswered input",
+    "today": "—",
+    "proposed": "One amber line if the required input was never answered.",
+    "why": "The placeholder must not be forgotten on a live page."
+   },
+   {
+    "n": 9,
+    "sel": {
+     "css": ".next"
+    },
+    "label": "Next action",
+    "today": "—",
+    "proposed": "One card proposed by the run with ✓ Accept (scheduled tonight) and Close run.",
+    "why": "The loop closes with one click — what makes it an agent rather than a report."
+   },
+   {
+    "n": 10,
+    "sel": {
+     "css": ".impact-strip"
+    },
+    "label": "Impact strip",
+    "today": "Marker on the Impact chart",
+    "proposed": "The marker for this action now links to the run.",
+    "why": "Impact becomes causal instead of decorative."
+   },
+   {
+    "n": 11,
+    "sel": {
+     "text": [
+      "b",
+      "Decisions"
+     ]
+    },
+    "label": "Decisions",
+    "today": "—",
+    "proposed": "Full log.",
+    "why": "—"
+   }
+  ],
+  "notes": []
+ },
+ "settings": {
+  "title": "S7 · AI settings › Behavior",
+  "items": [
+   {
+    "n": 1,
+    "sel": {
+     "css": "label:has(#aa)"
+    },
+    "label": "Auto-approve actions",
+    "today": "One toggle: “Skip tool approval cards — the agent acts without asking. Only affects new chats.”",
+    "proposed": "Extended: “Also start runs without a person accepting, for actions rated [Very high ▾] or above. Runs still stop at Review.” The action shows “Scheduled by policy”.",
+    "why": "Reuses the switch that exists; the impact band bounds the blast radius."
+   },
+   {
+    "n": 2,
+    "sel": {
+     "css": "label:has(#pause)"
+    },
+    "label": "Pause all runs",
+    "today": "—",
+    "proposed": "Kill switch: no new runs start; running ones pause at their next checkpoint; nothing is deleted; resume any time.",
+    "why": "Every agent needs a one-click off. Per project."
+   },
+   {
+    "n": 3,
+    "sel": {
+     "css": "#dest"
+    },
+    "label": "Where approved drafts land",
+    "today": "—",
+    "proposed": "Google Docs · WordPress · Webflow · GitHub PR · Linear ticket. One per project, set by an owner.",
+    "why": "The destination decision belongs in settings, made once."
+   },
+   {
+    "n": 4,
+    "sel": {
+     "text": [
+      "b",
+      "Agent budget"
+     ]
+    },
+    "label": "Agent budget",
+    "today": "Usage tab shows “Usage remaining 90%”",
+    "proposed": "What a run costs against the existing budget: ~15 tool calls to ground, one draft, one optimise pass, daily verify calls for 30 days.",
+    "why": "People should see the price before turning on policy runs."
+   }
+  ],
+  "notes": []
+ }
 };
 </script>
 <script>/* Action Runs — prototype. Hash routes: #/overview · #/actions?status&type&target&impact&sort&q · #/action/:id · #/run · #/review · #/handoff · #/report?day=7|30 · #/about */
@@ -374,17 +923,18 @@ window.DRAFT = {
   const otherTag = (it) => state.declined.has(it.id) ? `<span class="tag">Declined</span>` : state.accepted.has(it.id) ? `<span class="tag">Accepted</span>` : "—";
   function renderList(params) {
     crumb.innerHTML = `<span class="faint">Optimize</span><span class="faint">›</span><span>Actions</span>`;
-    const f = { status: params.status || (params.status === "" ? "All" : "All"), type: params.type || "All", target: params.target || "All", impact: params.impact || "All", sort: params.sort || "impact", q: params.q || "" };
+    const f = { status: params.status || (params.status === "" ? "All" : "All"), type: params.type || "All", target: params.target || "All", impact: params.impact || "All", sort: params.sort || "impact", q: params.q || "", group: params.group || "What to do" };
     const types = ["All", ...D.action_groups.map(g => g.title)];
     let items = allItems.filter(it => (f.status === "All" ? itemStatus(it) !== "Declined" : true) && (f.status === "All" || itemStatus(it) === f.status || (f.status === "Watching" && itemStatus(it).startsWith("Watching")) || (f.status === "Running" && itemStatus(it).startsWith("Revising"))) && (f.type === "All" || it.group === f.type) && (f.target === "All" || (f.target === "Owned" ? ["brief", "opt", "seo"].includes(it.type) : it.type === "earned")) && (f.impact === "All" || impLabel(it.impact) === f.impact) && (!f.q || it.title.toLowerCase().includes(f.q.toLowerCase())));
     if (f.sort === "impact") items.sort((a, b) => impRank(b.impact) - impRank(a.impact)); else if (f.sort === "title") items.sort((a, b) => a.title.localeCompare(b.title));
-    const groups = D.action_groups.map(g => ({ title: g.title, items: items.filter(i => i.group === g.title) })).filter(g => g.items.length);
+    const groups = (f.group === "Owned vs earned" ? [{ title: "Owned", items: items.filter(i => i.type !== "earned") }, { title: "Earned", items: items.filter(i => i.type === "earned") }] : D.action_groups.map(g => ({ title: g.title, items: items.filter(i => i.group === g.title) }))).filter(g => g.items.length);
     const c = D.counts;
     const sel = (key, name, opts, cur) => `<label class="chip" style="gap:4px"><span class="faint small">${name}</span><select data-f="${key}" style="border:0;background:transparent;font:inherit;color:inherit">${opts.map(o => `<option ${o === cur ? "selected" : ""}>${o}</option>`).join("")}</select></label>`;
     main.innerHTML = `
       <div class="toolbar">
         ${sel("status", "Status", STATUS_OPTS, f.status)} ${sel("type", "Type", types, f.type)} ${sel("target", "Target", ["All", "Owned", "Earned"], f.target)} ${sel("impact", "Impact", ["All", "Very high", "High", "Medium", "Low", "Very low"], f.impact)}
         <label class="chip" style="gap:4px"><span class="faint small">Sort</span><select data-f="sort" style="border:0;background:transparent;font:inherit;color:inherit"><option value="impact" ${f.sort === "impact" ? "selected" : ""}>Impact</option><option value="title" ${f.sort === "title" ? "selected" : ""}>Title</option></select></label>
+        ${sel("group", "Group by", ["What to do", "Owned vs earned"], f.group)}
         <input id="q" type="search" placeholder="Search actions" value="${esc(f.q)}" style="font:inherit;padding:6px 10px;border:1px solid var(--line);border-radius:8px;min-width:160px" aria-label="Search actions">
         <span class="sp"></span><span class="chip">+ Add content</span><button class="pill-btn" id="acceptall">✓ Accept all</button>
       </div>
@@ -715,7 +1265,7 @@ window.DRAFT = {
         <div><b>Not in this prototype:</b> real permissions, cost accounting beyond the budget line, content-optimisation and technical runs (second release), earned placements (out of scope).</div>
         <div><b>How production differs:</b> the run is a scheduled multi-step agent on Peec's existing harness using existing skills as steps; every read is an existing MCP tool (named in the run log); the one write inside Peec is <span class="mono">update_action_steps</span>; hand-off and live-detection are integrations; verification joins Crawl Insights, Sources, the brand report and AI Referrals to the action.</div>
       </div></div>
-      <p class="muted small">Keys: 1–6 jump between screens · R resets · P hides the presenter bar. Filters on the Actions page live in the URL.</p>
+      <p class="muted small">Keys: 1–6 jump between screens · R resets · P hides the presenter bar · <b>C shows “Changes”</b> — numbered callouts on every element that differs from Peec today, with Today / Proposed / Why in a side panel (same numbers as 04-feature-spec.md). Filters on the Actions page live in the URL.</p>
       <div class="card"><div class="hd"><b>Beyond the happy path</b></div><div class="bd small"><b>On the pages:</b> Decline / Undo, Accept (scheduled tonight) vs Accept &amp; run now, Accept all / Decline all, Cancel a run, answer the required input, Edit &amp; approve, Send back, Decline at review, Close run, <a href="#/settings">AI settings</a> (auto-approve by impact band, pause all runs, destination). <b>In the Scenarios menu on the presenter bar:</b> budget exhausted, unreadable source, tool error (resumable), stale review, destination not configured, URL found automatically, nothing published after 7 days, published URL 404, day 30 nothing moved, logs / GA4 not connected. Full list with expected behaviour in <span class="mono">05-use-cases.md</span>.</div></div>
       <a href="#/actions">← Back to Actions</a></div>`;
   }
@@ -734,14 +1284,62 @@ window.DRAFT = {
   }
   function updatePres() { const { seg, params } = parseHash(); document.querySelectorAll(".pres button[data-s]").forEach(b => { const k = b.dataset.s.split("?")[0].split("/")[0]; b.classList.toggle("on", k === seg && (seg !== "report" || (params.day || "30") === "30")); }); }
   function buildPres() {
-    const bar = h(`<div class="pres" role="navigation" aria-label="presenter"><span class="lab">Demo</span>${ORDER.map(([s, l]) => `<button data-s="${s}">${l}</button>`).join("")}<select id="scn" title="Scenarios" style="font:inherit;font-size:12px;background:transparent;color:#ddd;border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:4px 8px;max-width:210px">${SCENARIOS.map(([k, l]) => `<option value="${k}">${l}</option>`).join("")}</select><button data-a="about" title="What is real and what is simulated">ⓘ</button><span class="lab">1–6 · R reset · P hide</span></div>`);
+    const bar = h(`<div class="pres" role="navigation" aria-label="presenter"><span class="lab">Demo</span>${ORDER.map(([s, l]) => `<button data-s="${s}">${l}</button>`).join("")}<select id="scn" title="Scenarios" style="font:inherit;font-size:12px;background:transparent;color:#ddd;border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:4px 8px;max-width:210px">${SCENARIOS.map(([k, l]) => `<option value="${k}">${l}</option>`).join("")}</select><button data-a="spec" title="Show what changed vs Peec today (key C)">Changes</button><button data-a="about" title="What is real and what is simulated">ⓘ</button><span class="lab">1–6 · R reset · P hide</span></div>`);
     bar.querySelector("#scn").onchange = (e) => { state.scn = {}; if (e.target.value) state.scn[e.target.value] = true; const target = { budget: "run", source: "run", toolerr: "run", stale: "review", nodest: "handoff", autofound: "handoff", nudged: "handoff", broken: "report?day=30", nomove: "report?day=30", noconn: "report?day=30" }[e.target.value]; if (e.target.value) { state.run.resumed = false; if (["budget", "source", "toolerr"].includes(e.target.value)) { state.run = { ...freshRun(), status: "running", decisions: state.run.decisions }; } jumpTo(target); } else render(); };
     document.body.appendChild(bar);
     bar.querySelectorAll("button[data-s]").forEach(b => b.onclick = () => jumpTo(b.dataset.s));
     bar.querySelector("[data-a=about]").onclick = () => nav("about");
-    document.addEventListener("keydown", (e) => { if (["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName)) return; const i = parseInt(e.key, 10); if (i >= 1 && i <= 6) jumpTo(ORDER[i - 1][0]); if (e.key === "r" || e.key === "R") resetAll(); if (e.key === "p" || e.key === "P") { state.presHidden = !state.presHidden; bar.classList.toggle("hidden", state.presHidden); } });
+    bar.querySelector("[data-a=spec]").onclick = toggleSpec;
+    document.addEventListener("keydown", (e) => { if (["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName)) return; const i = parseInt(e.key, 10); if (i >= 1 && i <= 6) jumpTo(ORDER[i - 1][0]); if (e.key === "r" || e.key === "R") resetAll(); if (e.key === "p" || e.key === "P") { state.presHidden = !state.presHidden; bar.classList.toggle("hidden", state.presHidden); } if (e.key === "c" || e.key === "C") toggleSpec(); });
   }
   function jumpTo(s) { const [path, q] = s.split("?"); const params = Object.fromEntries(new URLSearchParams(q || "")); if (path === "run") state._fast = true; nav(path, q ? params : undefined); }
+
+
+  /* ---------- "Changes" mode: numbered callouts from 04-feature-spec.md §6.2 ---------- */
+  let specObs = null, specTimer = null;
+  try { state.spec = localStorage.getItem("ar.spec") === "1"; } catch (e) { state.spec = false; }
+  function toggleSpec() { state.spec = !state.spec; try { localStorage.setItem("ar.spec", state.spec ? "1" : "0"); } catch (e) {} applySpec(); }
+  function specKey() { const { seg, id } = parseHash(); if (seg === "action") return id === anchor.id ? "action" : null; return window.SPEC && window.SPEC[seg] ? seg : null; }
+  function findEl(sel) {
+    if (sel.css) { try { return main.querySelector(sel.css); } catch (e) { return null; } }
+    if (sel.text) { const [tag, txt] = sel.text; const els = [...main.querySelectorAll(tag)].filter(e => (e.textContent || "").replace(/\s+/g, " ").includes(txt)); return els.length ? els[els.length - 1] : null; }
+    return null;
+  }
+  function clearSpec() { document.querySelectorAll(".spec-badge,.spec-ring").forEach(e => e.remove()); document.querySelectorAll(".spec-hl").forEach(e => e.classList.remove("spec-hl", "spec-hot")); const d = $("#specdrawer"); if (d) d.remove(); document.body.classList.remove("spec"); if (specObs) { specObs.disconnect(); specObs = null; } const pb = document.querySelector('.pres [data-a=spec]'); if (pb) pb.classList.toggle("act", !!state.spec); }
+  function placeSpec() {
+    document.querySelectorAll(".spec-badge,.spec-ring").forEach(e => e.remove());
+    const key = specKey(); if (!key) return;
+    const mr = main.getBoundingClientRect();
+    window.SPEC[key].items.forEach(it => {
+      const el = findEl(it.sel); if (!el) return;
+      const r = el.getBoundingClientRect(); if (!r.width && !r.height) return;
+      el.classList.add("spec-hl");
+      const ring = h(`<div class="spec-ring" data-n="${it.n}"></div>`); ring.style.cssText = `left:${r.left - mr.left - 4}px;top:${r.top - mr.top - 4}px;width:${r.width + 8}px;height:${r.height + 8}px`;
+      const b = h(`<div class="spec-badge" data-n="${it.n}" title="${esc(it.label)}">${it.n}</div>`); b.style.cssText = `left:${r.left - mr.left - 14}px;top:${r.top - mr.top - 14}px`;
+      main.appendChild(ring); main.appendChild(b);
+      const hot = (on) => { document.querySelectorAll(`#specdrawer .e[data-n="${it.n}"]`).forEach(x => { x.classList.toggle("hot", on); if (on) x.scrollIntoView({ block: "nearest" }); }); el.classList.toggle("spec-hot", on); ring.classList.toggle("hot", on); };
+      [b, el].forEach(x => { x.addEventListener("mouseenter", () => hot(true)); x.addEventListener("mouseleave", () => hot(false)); });
+      b.onclick = (e) => { e.stopPropagation(); hot(true); };
+    });
+  }
+  function applySpec() {
+    clearSpec();
+    if (!state.spec) return;
+    document.body.classList.add("spec");
+    const key = specKey();
+    const sp = key ? window.SPEC[key] : null;
+    const d = h(`<aside id="specdrawer" aria-label="What changed"><div class="dh"><b>What changed vs Peec today</b><span class="sp" style="flex:1"></span><button class="x" id="specclose" title="Hide (C)">✕</button></div>
+      ${sp ? `<div class="dt">${esc(sp.title)}</div><div class="ds">Hover a number on the screen, or an entry here. Same numbers as 04-feature-spec.md §6.2.</div>
+      ${sp.items.map(it => `<div class="e" data-n="${it.n}"><span class="n">${it.n}</span><div class="t"><b>${esc(it.label)}</b><span><span class="k">Today</span><span class="today">${esc(it.today)}</span></span><span><span class="k">Proposed</span>${esc(it.proposed)}</span><span><span class="k">Why</span><span class="why">${esc(it.why)}</span></span></div></div>`).join("")}
+      ${sp.notes.map(n => `<div class="note">${esc(n)}</div>`).join("")}` : `<div class="ds">No callouts on this page. The changes are on: Overview, Actions, the content-brief action, Run, Review, Hand-off, Report, AI settings.</div>`}</aside>`);
+    document.body.appendChild(d);
+    $("#specclose").onclick = toggleSpec;
+    d.querySelectorAll(".e").forEach(e => { const n = e.dataset.n; e.addEventListener("mouseenter", () => { document.querySelectorAll(`.spec-ring[data-n="${n}"]`).forEach(r => r.classList.add("hot")); e.classList.add("hot"); }); e.addEventListener("mouseleave", () => { document.querySelectorAll(`.spec-ring[data-n="${n}"]`).forEach(r => r.classList.remove("hot")); e.classList.remove("hot"); }); e.onclick = () => { const r = document.querySelector(`.spec-badge[data-n="${n}"]`); if (r) r.scrollIntoView({ block: "center", behavior: "smooth" }); }; });
+    placeSpec();
+    specObs = new MutationObserver(() => { clearTimeout(specTimer); specTimer = setTimeout(placeSpec, 120); });
+    specObs.observe(main, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "style"] });
+  }
+  window.addEventListener("resize", () => { if (state.spec) placeSpec(); });
 
   /* ---------- router ---------- */
   function render() {
@@ -761,7 +1359,7 @@ window.DRAFT = {
       case "settings": renderSettings(); break;
       default: errorScreen("Page not found", `There is no page at “#/${seg}”.`);
     }
-    window.scrollTo({ top: 0 }); updatePres();
+    window.scrollTo({ top: 0 }); updatePres(); applySpec();
     document.querySelectorAll(".nav a[data-r]").forEach(a => a.classList.toggle("on", a.dataset.r === seg || (a.dataset.r === "actions" && ["action", "run", "review", "handoff", "report"].includes(seg))));
   }
   /* self-test hook for automated checks (SMA-11) */

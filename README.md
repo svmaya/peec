@@ -10,7 +10,7 @@ Open `index.html` in a browser. One file, no server, no build step, no network e
 
 ## Presenting
 
-- Keys **1–6** jump between the six demo screens; **R** resets; **P** hides the presenter bar.
+- Keys **1–6** jump between the six demo screens; **R** resets; **P** hides the presenter bar; **C** toggles **Changes** — numbered callouts on every element that differs from Peec today, with Today / Proposed / Why in a side panel (same numbers as the feature spec). Turn it on while rehearsing, off for the room.
 - The **Scenarios** menu on the presenter bar switches on the non-happy paths (budget exhausted, tool error, stale review, no destination, URL found automatically, nudge after 7 days, published URL 404, day 30 nothing moved, logs/GA4 not connected).
 - Everything else is reachable by clicking: Decline / Undo, Accept (scheduled tonight) vs Accept & run now, Accept all / Decline all, Cancel run, answer the required input, Edit & approve, Send back, Decline at review, Close run, AI settings (auto-approve by impact band, pause runs, destination).
 - "About this prototype" in the sidebar says what is real and what is simulated.
@@ -21,6 +21,7 @@ Open `index.html` in a browser. One file, no server, no build step, no network e
 src/app.js     state machine, hash router, all screens
 src/app.css    Peec visual language (Inter + IBM Plex Mono)
 src/draft.js   the draft the runner produces (claims tagged sourced / to confirm)
+src/spec.js    the Changes callouts (generated from the feature spec)
 src/data.json  snapshot: prompts, actions, sources, crawlability + synthetic verify data
 build.py       assembles index.html from src/
 tests/         Playwright checks: smoke.py (happy path) and usecases.py (use cases A–E)

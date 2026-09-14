@@ -2,7 +2,7 @@ import json
 import os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 rd=lambda f: open(os.path.join("src",f)).read()
-data=rd("data.json"); css=rd("app.css"); draft=rd("draft.js"); app=rd("app.js")
+data=rd("data.json"); css=rd("app.css"); draft=rd("draft.js"); app=rd("app.js"); specjs=rd("spec.js")
 nav=lambda r,label,extra="": f'<a href="#/{r}" data-r="{r}"><span class="ic"></span>{label}{extra}</a>'
 dead=lambda label,extra="": f'<a href="#/actions" onclick="return false" style="color:var(--ink3)"><span class="ic"></span>{label}{extra}</a>'
 shell=f'''<title>Action Runs</title>
@@ -32,6 +32,7 @@ shell=f'''<title>Action Runs</title>
 </div>
 <script>window.DATA={data};</script>
 <script>{draft}</script>
+<script>{specjs}</script>
 <script>{app}</script>
 '''
 open("artifact.html","w").write(shell)
