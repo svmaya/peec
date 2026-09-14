@@ -944,7 +944,7 @@ window.SPEC = {
         <div class="card" style="position:relative">
           <div class="hd"><span class="dot"></span><b>${f.status === "All" ? "All statuses" : esc(f.status)}</b><span class="cnt tag">${items.length}</span><span class="sp" style="flex:1"></span><span class="tag blue">Runs</span></div>
           <div id="bulkbox" class="hidden" style="padding:12px 18px;border-bottom:1px solid var(--line);background:#FAFCFF"></div>
-          ${groups.length ? groups.map(g => `<div class="grp"><div class="gh"><span class="tri">▾</span><span>${esc(g.title)}</span><span class="cnt">${g.items.length}</span></div>${g.items.map(it => `
+          ${groups.length ? groups.map(g => `<div class="grp"><div class="gh"><span class="tri">▾</span><span>${esc(g.title)}</span><span class="cnt">${g.items.length}</span>${g.title === "Content optimization" ? '<span class="tag ill" style="margin-left:8px" title="Peec has this action type; the Nike snapshot had none, so these 7 are invented for the demo">Illustrative</span>' : ""}</div>${g.items.map(it => `
             <div class="row clickable ${it.type === "brief" ? "hl" : ""}" data-id="${esc(it.id)}" tabindex="0" role="button">
               <span>${impBars(it.impact)}</span>
               <div class="t"><span class="txt">${esc(it.title)}</span>${it.status === "COMPLETED" ? '<span class="tag pos">Done</span>' : ""}</div>
